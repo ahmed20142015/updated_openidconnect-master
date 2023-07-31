@@ -22,23 +22,25 @@ class OpenIdConnectAndroidiOS {
             backgroundColor: Colors.transparent,
             elevation: 0,
             leading: IconButton(
-              onPressed: ()=> Navigator.of(context).pop(),
-              icon: Icon(Icons.close, size: 25, color: Colors.black,),
+              onPressed: () => Navigator.of(context).pop(),
+              icon: Icon(
+                Icons.close,
+                size: 25,
+                color: Colors.black,
+              ),
             ),
           ),
           body: flutterWebView.WebViewWidget(
-            controller: flutterWebView.WebViewController()
-              ..loadRequest(Uri.parse(authorizationUrl))
-              ..setJavaScriptMode(flutterWebView.JavaScriptMode.unrestricted)
-              ..setNavigationDelegate(
-                  flutterWebView.NavigationDelegate(
-                    onPageFinished: (url) {
-                      if (url.startsWith(redirectUrl)) {
-                        Navigator.pop(dialogContext, url);
-                      }
-                    },
-                 ))
-          ),
+              controller: flutterWebView.WebViewController()
+                ..loadRequest(Uri.parse(authorizationUrl))
+                ..setJavaScriptMode(flutterWebView.JavaScriptMode.unrestricted)
+                ..setNavigationDelegate(flutterWebView.NavigationDelegate(
+                  onPageFinished: (url) {
+                    if (url.startsWith(redirectUrl)) {
+                      Navigator.pop(dialogContext, url);
+                    }
+                  },
+                ))),
         );
       },
     );
@@ -48,13 +50,13 @@ class OpenIdConnectAndroidiOS {
     return result;
   }
 
-  static Future<void> authorizeInteractiveMobile({
-    required BuildContext context,
-    required String authorizationUrl,
-    required String redirectUrl,
-    required InteractiveAuthorizationRequest request,
-    required  Future<void> Function(AuthorizationResponse? response) onPop
-  }) async {
+  static Future<void> authorizeInteractiveMobile(
+      {required BuildContext context,
+      required String authorizationUrl,
+      required String redirectUrl,
+      required InteractiveAuthorizationRequest request,
+      required Future<void> Function(AuthorizationResponse? response)
+          onPop}) async {
     //Create the url
 
     showDialog<String?>(
@@ -76,24 +78,22 @@ class OpenIdConnectAndroidiOS {
               controller: flutterWebView.WebViewController()
                 ..loadRequest(Uri.parse(authorizationUrl))
                 ..setJavaScriptMode(flutterWebView.JavaScriptMode.unrestricted)
-                ..setNavigationDelegate(
-                    flutterWebView.NavigationDelegate(
-                      onPageFinished: (url)async {
-                        print(url);
-                        print(redirectUrl);
-                        if (url.startsWith(redirectUrl)) {
-                          print('Yes');
-                          var result = await  _completeCodeExchange(request: request, url: url);
-                          await onPop(result);
-                          Navigator.pop(dialogContext);
-                        }
-                      },
-                    ))
-          ),
+                ..setNavigationDelegate(flutterWebView.NavigationDelegate(
+                    onPageFinished: (url) async {
+                  print(url);
+                  print(redirectUrl);
+                  if (url.startsWith(redirectUrl)) {
+                    var result =
+                        await _completeCodeExchange(request: request, url: url);
+                    await onPop(result);
+                    Navigator.pop(dialogContext);
+                  }
+                }, onNavigationRequest: (flutterWebView.NavigationRequest request) {
+                  print(request.url);
+                }))),
         );
       },
     );
-
   }
 
   static Future<AuthorizationResponse> _completeCodeExchange({
@@ -132,7 +132,7 @@ class OpenIdConnectAndroidiOS {
     if (state != null && state.isNotEmpty) body.addAll({"state": state});
 
     final response = await httpRetry(
-          () => http.post(
+      () => http.post(
         Uri.parse(request.configuration.tokenEndpoint),
         body: body,
       ),
@@ -143,5 +143,4 @@ class OpenIdConnectAndroidiOS {
 
     return AuthorizationResponse.fromJson(response);
   }
-
 }
