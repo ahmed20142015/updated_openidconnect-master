@@ -79,6 +79,8 @@ class OpenIdConnectAndroidiOS {
                 ..setNavigationDelegate(
                     flutterWebView.NavigationDelegate(
                       onPageFinished: (url)async {
+                        print(url);
+                        print(redirectUrl);
                         if (url.startsWith(redirectUrl)) {
                           var result = await  _completeCodeExchange(request: request, url: url);
                           await onPop(result);
