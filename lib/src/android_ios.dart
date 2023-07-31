@@ -88,8 +88,10 @@ class OpenIdConnectAndroidiOS {
                     await onPop(result);
                     Navigator.pop(dialogContext);
                   }
-                }, onNavigationRequest: (flutterWebView.NavigationRequest request) {
+                }, onNavigationRequest:
+                        (flutterWebView.NavigationRequest request) {
                   print(request.url);
+                  return flutterWebView.NavigationDecision.navigate;
                 }))),
         );
       },
