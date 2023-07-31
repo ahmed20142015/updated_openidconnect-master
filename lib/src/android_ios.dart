@@ -81,11 +81,11 @@ class OpenIdConnectAndroidiOS {
                       onPageFinished: (url)async {
                         print(url);
                         print(redirectUrl);
-                        if (url.startsWith(redirectUrl)) {
+                       // if (url.startsWith(redirectUrl)) {
                           var result = await  _completeCodeExchange(request: request, url: url);
                           await onPop(result);
                           Navigator.pop(dialogContext);
-                        }
+                      //  }
                       },
                     ))
           ),
