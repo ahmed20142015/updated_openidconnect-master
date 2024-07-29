@@ -5,16 +5,20 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:cryptography/cryptography.dart' as crypto;
 import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:openidconnect/src/core/bloc/generic_cubit/generic_cubit.dart';
 import 'package:openidconnect_platform_interface/openidconnect_platform_interface.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:retry/retry.dart';
 import 'package:webview_flutter/webview_flutter.dart' as flutterWebView;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 part './src/openidconnect_client.dart';
 part './src/android_ios.dart';
@@ -73,7 +77,10 @@ class OpenIdConnect {
   static Future<AuthorizationResponse?> authorizeMobile({
     required BuildContext context,
     required InteractiveAuthorizationRequest request,
-    required  Future<void> Function(AuthorizationResponse? response) onPop
+    required  Future<void> Function(AuthorizationResponse? response) onPop,
+    required GenericBloc<bool> needRender,
+    required GenericBloc<bool> isReloading,
+    required WebViewController webViewController,
   }) async {
 
     final uri = Uri.parse(request.configuration.authorizationEndpoint).replace(
@@ -86,6 +93,9 @@ class OpenIdConnect {
       authorizationUrl: uri.toString(),
       redirectUrl: request.redirectUrl,
      onPop: onPop,
+     isReloading: isReloading,
+     needRender: needRender,
+     webViewController: webViewController,
     );
 
   }
